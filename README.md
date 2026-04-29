@@ -1,6 +1,6 @@
 - Added KernelSU (GKI)
 - Added SuSFS
-- Added support for unofficial version of KernelSU manager (backslashxx)
+- Added support for unofficial version of KernelSU manager ([backslashxx](https://github.com/backslashxx/KernelSU))
 - Added Westwood TCP (set as default)
 - Built with latest Clang
 
