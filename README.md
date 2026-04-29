@@ -1,4 +1,3 @@
-# AOSPA Marble GKI Kernel
 ## Differences from stock AOSPA kernel:
 - Added KernelSU
 - Added SuSFS
