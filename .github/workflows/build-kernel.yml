@@ -9,20 +9,6 @@ jobs:
   build-kernel:
     runs-on: ubuntu-22.04
     steps:
-      - name: Free disk space
-        uses: endersonmenezes/free-disk-space@main
-        with:
-          remove_android: true
-          remove_dotnet: true
-          remove_haskell: true
-          remove_tool_cache: true
-          remove_swap: false
-          remove_packages: "azure-cli google-cloud-cli microsoft-edge-stable google-chrome-stable firefox postgresql* temurin-* *llvm* mysql* dotnet-sdk-*"
-          remove_packages_one_command: true
-          remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell /usr/local/julia /usr/local/aws-cli /usr/local/aws-sam-cli /usr/share/gradle"
-          rm_cmd: "rmz"
-          rmz_version: "3.1.1"
-          testing: false
       - name: Set swap space
         uses: pierotofy/set-swap-space@master
         with:
@@ -73,23 +59,13 @@ jobs:
         run: |
           cd kernel_platform/xiaomi/sm8450
           rmdir KernelSU
-          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s 8f496b9
+          curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s legacy-susfs
       - name: Include SuSFS
         run: |
           HOME="$(pwd)"
           cp -r susfs4ksu/kernel_patches/* kernel_platform/xiaomi/sm8450
-          cd kernel_platform/xiaomi/sm8450/KernelSU
-          patch -p1 < 10_enable_susfs_for_ksu.patch
-          cd ..
+          cd kernel_platform/xiaomi/sm8450
           patch -p1 < 50_add_susfs_in_gki-android12-5.10.patch
-      - name: Include manager signature
-        run: |
-          set -e
-          FILE="kernel_platform/xiaomi/sm8450/KernelSU/kernel/manager/apk_sign.c"
-          SIG='check_v2_signature(path, 0x363, "4359c171f32543394cbc23ef908c4bb94cad7c8087002ba164c8230948c21549")'
-          sed -i '0,/check_v2_signature(path, EXPECTED_SIZE, EXPECTED_HASH)/{
-            s/check_v2_signature(path, EXPECTED_SIZE, EXPECTED_HASH)/check_v2_signature(path, EXPECTED_SIZE, EXPECTED_HASH) || '"$SIG"'/
-          }' "$FILE"
       - name: Fix Clang warnings
         run: |
           cp -rf aospa-marble-gki-kernel/android_kernel_xiaomi_sm8450/. kernel_platform/xiaomi/sm8450
@@ -119,7 +95,7 @@ jobs:
           zip -r9 "../kernel.zip" *
       - name: Generate release tag
         id: tag
-        run: echo "release_tag=AOSPA_Marble_GKI_KernelSU_SuSFS_$(date +'%Y.%m.%d_%H%M')" >> "$GITHUB_OUTPUT"
+        run: echo "release_tag=AOSPA_Marble_GKI_KSUNext_SuSFS_$(date +'%Y.%m.%d_%H%M')" >> "$GITHUB_OUTPUT"
       - name: Create release
         uses: softprops/action-gh-release@v3.0.0
         with:
